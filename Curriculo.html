@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedro Augusto — Engenheiro de Dados</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#020408;
+  --bg2:#080d14;
+  --bg3:#0d1520;
+  --accent:#3b82f6;
+  --accent2:#60a5fa;
+  --text:#f0f4ff;
+  --muted:#8899aa;
+  --border:rgba(59,130,246,0.15);
+  --font-display:'Syne',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cursor{position:fixed;width:12px;height:12px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s,background 0.2s;mix-blend-mode:screen}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(59,130,246,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.15s ease;mix-blend-mode:screen}
+body:has(a:hover) #cursor,body:has(button:hover) #cursor{transform:translate(-50%,-50%) scale(2.5);background:#fff}
+body:has(a:hover) #cursor-ring,body:has(button:hover) #cursor-ring{transform:translate(-50%,-50%) scale(1.5);opacity:0}
+
+/* SCROLL PROGRESS */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),#a855f7);z-index:1000;transition:width 0.1s}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:500;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;transition:all 0.4s}
+nav.scrolled{background:rgba(2,4,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;color:var(--text)}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;font-weight:500;letter-spacing:0.04em;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden;padding:0 2rem}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+.hero-glow{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);padding:6px 16px;border-radius:100px;font-size:0.75rem;font-family:var(--font-mono);color:var(--accent2);margin-bottom:2rem;animation:fadeUp 0.8s ease both}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1.hero-name{font-size:clamp(3.5rem,9vw,8rem);font-weight:800;line-height:0.95;letter-spacing:-0.04em;margin-bottom:1.5rem;animation:fadeUp 0.8s 0.1s ease both}
+h1.hero-name span{display:block}
+h1.hero-name .accent{background:linear-gradient(135deg,var(--accent),#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.1rem;color:var(--muted);max-width:480px;line-height:1.6;margin-bottom:3rem;animation:fadeUp 0.8s 0.2s ease both;font-family:var(--font-mono);font-weight:300}
+.hero-sub .typewriter{border-right:2px solid var(--accent);animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.8s 0.3s ease both}
+.btn-primary{background:var(--accent);color:#fff;padding:0.8rem 2rem;border-radius:8px;text-decoration:none;font-size:0.9rem;font-weight:600;transition:all 0.2s;border:none;cursor:none}
+.btn-primary:hover{background:#2563eb;transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--text);padding:0.8rem 2rem;border-radius:8px;text-decoration:none;font-size:0.9rem;font-weight:600;transition:all 0.2s;border:1px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:0.7rem;font-family:var(--font-mono);animation:fadeUp 1s 0.6s ease both;letter-spacing:0.1em}
+.scroll-hint .line{width:1px;height:48px;background:linear-gradient(transparent,var(--accent));animation:scrollLine 2s ease-in-out infinite}
+@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* SECTIONS */
+section{padding:8rem 2rem;max-width:1100px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1rem}
+.section-title{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1.5rem}
+.section-title .dim{color:var(--muted)}
+
+/* ABOUT */
+#about{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1100px;margin:0 auto;padding:8rem 2rem}
+.about-visual{position:relative}
+.about-avatar{width:100%;aspect-ratio:1;border-radius:20px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.avatar-letters{font-size:5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;z-index:1}
+.avatar-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.avatar-rings span{position:absolute;border-radius:50%;border:1px solid rgba(59,130,246,0.15);animation:ringPulse 3s ease-in-out infinite}
+.avatar-rings span:nth-child(1){width:60%;height:60%;animation-delay:0s}
+.avatar-rings span:nth-child(2){width:80%;height:80%;animation-delay:0.5s}
+.avatar-rings span:nth-child(3){width:100%;height:100%;animation-delay:1s}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.05);opacity:0.2}}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;color:var(--accent);font-family:var(--font-mono)}
+.stat-label{font-size:0.75rem;color:var(--muted);margin-top:4px;font-family:var(--font-mono)}
+.about-text p{color:var(--muted);line-height:1.8;margin-bottom:1rem;font-size:1rem}
+.about-text .highlight{color:var(--text);font-weight:600}
+.about-info{margin-top:1.5rem;display:flex;flex-direction:column;gap:0.6rem}
+.info-row{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:0.82rem;color:var(--muted)}
+.info-row span:first-child{color:var(--accent);min-width:20px;text-align:center}
+
+/* SKILLS */
+#skills{max-width:1100px;margin:0 auto;padding:8rem 2rem;text-align:center}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-top:3rem}
+.skill-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.8rem 1rem;transition:all 0.3s;position:relative;overflow:hidden}
+.skill-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(59,130,246,0.08),transparent);opacity:0;transition:opacity 0.3s}
+.skill-card:hover::before{opacity:1}
+.skill-card:hover{border-color:rgba(59,130,246,0.4);transform:translateY(-4px)}
+.skill-icon{font-size:2rem;margin-bottom:0.8rem;display:block}
+.skill-name{font-size:0.85rem;font-weight:600;margin-bottom:0.5rem}
+.skill-level{height:2px;background:var(--bg3);border-radius:1px;overflow:hidden;margin-top:0.8rem}
+.skill-bar{height:100%;background:linear-gradient(90deg,var(--accent),#a855f7);border-radius:1px;width:0;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+
+/* PROJECTS */
+#projects{max-width:1100px;margin:0 auto;padding:8rem 2rem}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:1.5rem;margin-top:3rem}
+.project-card{perspective:1000px}
+.project-card-inner{position:relative;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);height:320px;cursor:none}
+.project-card.flipped .project-card-inner{transform:rotateY(180deg)}
+.project-front,.project-back{position:absolute;inset:0;backface-visibility:hidden;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2rem;display:flex;flex-direction:column}
+.project-back{transform:rotateY(180deg);background:var(--bg3);justify-content:center}
+.project-num{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);letter-spacing:0.1em;margin-bottom:1rem}
+.project-name{font-size:1.4rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.8rem;line-height:1.2}
+.project-desc{color:var(--muted);font-size:0.9rem;line-height:1.6;flex:1}
+.project-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem}
+.tag{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);color:var(--accent2);padding:4px 10px;border-radius:6px;font-size:0.72rem;font-family:var(--font-mono)}
+.flip-hint{font-size:0.75rem;font-family:var(--font-mono);color:var(--muted);margin-top:1.2rem;display:flex;align-items:center;gap:6px}
+.flip-hint::before{content:'↻';color:var(--accent);font-size:1rem}
+.project-back-title{font-size:1.1rem;font-weight:700;margin-bottom:1rem;color:var(--accent)}
+.project-back ul{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
+.project-back ul li{font-size:0.85rem;color:var(--muted);padding-left:1rem;position:relative;line-height:1.5}
+.project-back ul li::before{content:'→';position:absolute;left:0;color:var(--accent)}
+.project-back .project-link{display:inline-flex;align-items:center;gap:6px;margin-top:1.5rem;color:var(--accent);text-decoration:none;font-size:0.85rem;font-family:var(--font-mono);font-weight:500;transition:gap 0.2s}
+.project-back .project-link:hover{gap:10px}
+
+/* EDUCATION */
+#education{max-width:1100px;margin:0 auto;padding:8rem 2rem}
+.timeline{margin-top:3rem;position:relative;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--border)}
+.timeline-line{position:absolute;left:0;top:0;width:1px;background:linear-gradient(var(--accent),#a855f7);transform-origin:top;height:0;transition:height 1.5s ease}
+.timeline-item{position:relative;padding-bottom:3rem}
+.timeline-dot{position:absolute;left:-2rem;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent);transform:translateX(-4.5px);box-shadow:0 0 12px var(--accent)}
+.timeline-year{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);margin-bottom:0.5rem;letter-spacing:0.1em}
+.timeline-title{font-size:1.3rem;font-weight:700;margin-bottom:0.4rem}
+.timeline-sub{color:var(--muted);font-size:0.9rem}
+.timeline-badge{display:inline-block;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);color:#c084fc;padding:4px 12px;border-radius:100px;font-size:0.72rem;font-family:var(--font-mono);margin-top:0.8rem}
+
+/* CONTACT */
+#contact{max-width:1100px;margin:0 auto;padding:8rem 2rem;text-align:center}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:3rem}
+.contact-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;text-decoration:none;color:var(--text);transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.contact-card:hover{border-color:var(--accent);background:var(--bg3);transform:translateY(-4px)}
+.contact-icon{width:52px;height:52px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all 0.3s}
+.contact-card:hover .contact-icon{background:rgba(59,130,246,0.2);transform:scale(1.1)}
+.contact-label{font-size:0.75rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:0.08em}
+.contact-value{font-size:0.95rem;font-weight:600;word-break:break-all}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.4,0,0.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+
+/* PARTICLES */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:0;animation:floatParticle linear infinite}
+@keyframes floatParticle{0%{opacity:0;transform:translateY(100vh) translateX(0)}10%{opacity:0.4}90%{opacity:0.2}100%{opacity:0;transform:translateY(-10vh) translateX(var(--tx))}}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  #about{grid-template-columns:1fr;gap:2rem}
+  .projects-grid{grid-template-columns:1fr}
+  .project-card-inner{height:360px}
+  section,#about,#skills,#projects,#education,#contact{padding:5rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="progress"></div>
+<div id="particles"></div>
+
+<nav id="navbar">
+  <div class="nav-logo">PA<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projetos</a></li>
+    <li><a href="#education">Formação</a></li>
+    <li><a href="#contact">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-tag">Disponível para oportunidades</div>
+  <h1 class="hero-name">
+    <span>Pedro</span>
+    <span class="accent">Augusto</span>
+  </h1>
+  <p class="hero-sub"><span id="typewriter"></span><span class="typewriter"></span></p>
+  <div class="hero-btns">
+    <a href="https://github.com/PedroIAM" target="_blank" class="btn-primary">GitHub</a>
+    <a href="https://www.linkedin.com/in/pedro-augusto-9197ba3ab/" target="_blank" class="btn-outline">LinkedIn</a>
+  </div>
+  <div class="scroll-hint">
+    <div class="line"></div>
+    SCROLL
+  </div>
+</section>
+
+<!-- ABOUT -->
+<div id="about">
+  <div class="about-visual reveal">
+    <div class="about-avatar" id="avatar3d">
+      <div class="avatar-rings">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="avatar-letters">PA</div>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card reveal reveal-delay-1">
+        <div class="stat-num">18</div>
+        <div class="stat-label">Anos de idade</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-num">8+</div>
+        <div class="stat-label">Tecnologias</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-1">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Projetos no GitHub</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-num">2029</div>
+        <div class="stat-label">Conclusão do curso</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-text">
+    <div class="section-label reveal">Sobre mim</div>
+    <h2 class="section-title reveal">Construindo o <span class="dim">futuro</span> com dados</h2>
+    <p class="reveal">Tenho <span class="highlight">18 anos</span> e muita vontade de aprender e conquistar oportunidades na área de dados. Gosto de explorar novos conhecimentos e estou em <span class="highlight">constante desenvolvimento</span>.</p>
+    <p class="reveal">Atualmente cursando Ciência da Computação e me dedicando ao domínio das principais ferramentas do ecossistema de dados — de Python e SQL até cloud computing com AWS.</p>
+    <div class="about-info reveal">
+      <div class="info-row"><span>📍</span> Vila Velha, Espírito Santo</div>
+      <div class="info-row"><span>🎓</span> Ciência da Computação — UFES (2029)</div>
+      <div class="info-row"><span>🎯</span> Futuro Engenheiro de Dados</div>
+      <div class="info-row"><span>✉️</span> pedrosilva356aug@gmail.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label reveal">Stack técnico</div>
+  <h2 class="section-title reveal">Minhas <span class="dim">habilidades</span></h2>
+  <div class="skills-grid">
+    <div class="skill-card reveal" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">🐍</span>
+      <div class="skill-name">Python</div>
+      <div class="skill-level"><div class="skill-bar" data-width="80"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">🗄️</span>
+      <div class="skill-name">SQL</div>
+      <div class="skill-level"><div class="skill-bar" data-width="75"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">🐘</span>
+      <div class="skill-name">PostgreSQL</div>
+      <div class="skill-level"><div class="skill-bar" data-width="70"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-3" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">🐼</span>
+      <div class="skill-name">Pandas</div>
+      <div class="skill-level"><div class="skill-bar" data-width="78"></div></div>
+    </div>
+    <div class="skill-card reveal" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">🔢</span>
+      <div class="skill-name">NumPy</div>
+      <div class="skill-level"><div class="skill-bar" data-width="65"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">📊</span>
+      <div class="skill-name">Matplotlib</div>
+      <div class="skill-level"><div class="skill-bar" data-width="72"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">☁️</span>
+      <div class="skill-name">AWS</div>
+      <div class="skill-level"><div class="skill-bar" data-width="60"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-3" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+      <span class="skill-icon">🌿</span>
+      <div class="skill-name">Git & GitHub</div>
+      <div class="skill-level"><div class="skill-bar" data-width="82"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label reveal">Portfólio</div>
+  <h2 class="section-title reveal">Projetos <span class="dim">reais</span></h2>
+  <p style="color:var(--muted);font-family:var(--font-mono);font-size:0.8rem;margin-top:-0.5rem;margin-bottom:1rem" class="reveal">← clique nos cards para virar →</p>
+  <div class="projects-grid">
+    <div class="project-card reveal" onclick="this.classList.toggle('flipped')">
+      <div class="project-card-inner">
+        <div class="project-front">
+          <div class="project-num">01 / PROJETO</div>
+          <div class="project-name">Análise de Vendas</div>
+          <div class="project-desc">Integração entre PostgreSQL, Python e Pandas para realizar consultas SQL e análises de dados reais de vendas de uma loja de informática.</div>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Pandas</span>
+            <span class="tag">Matplotlib</span>
+            <span class="tag">SQL</span>
+          </div>
+          <div class="flip-hint">clique para ver detalhes</div>
+        </div>
+        <div class="project-back">
+          <div class="project-back-title">O que foi analisado</div>
+          <ul>
+            <li>Produtos mais vendidos e faturamento total</li>
+            <li>Vendas por período e sazonalidade</li>
+            <li>Produtos com menor desempenho</li>
+            <li>Identificação de padrões de consumo</li>
+            <li>Análise exploratória completa (EDA)</li>
+          </ul>
+          <a href="https://github.com/PedroIAM/Analise-de-vendas" target="_blank" class="project-link" onclick="event.stopPropagation()">Ver no GitHub →</a>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal reveal-delay-2" onclick="this.classList.toggle('flipped')">
+      <div class="project-card-inner">
+        <div class="project-front">
+          <div class="project-num">02 / PROJETO</div>
+          <div class="project-name">Combustível dos Países</div>
+          <div class="project-desc">Análise histórica dos preços de combustíveis de 1990 a 2008, comparando a evolução de Japão, EUA e Austrália com gráficos interativos.</div>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Pandas</span>
+            <span class="tag">Matplotlib</span>
+            <span class="tag">Séries Temporais</span>
+          </div>
+          <div class="flip-hint">clique para ver detalhes</div>
+        </div>
+        <div class="project-back">
+          <div class="project-back-title">Funcionalidades</div>
+          <ul>
+            <li>Análise individual por país (JP, USA, AU)</li>
+            <li>Comparação geral entre todos os países</li>
+            <li>Gráficos de barras, linhas e dispersão</li>
+            <li>Interface interativa via terminal</li>
+            <li>Análise de séries temporais (18 anos)</li>
+          </ul>
+          <a href="https://github.com/PedroIAM/Analise-de-dados-Combustivel-dos-Paises" target="_blank" class="project-link" onclick="event.stopPropagation()">Ver no GitHub →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label reveal">Formação</div>
+  <h2 class="section-title reveal">Minha <span class="dim">jornada</span></h2>
+  <div class="timeline">
+    <div class="timeline-line" id="timelineLine"></div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">2025 → 2029</div>
+      <div class="timeline-title">Ciência da Computação</div>
+      <div class="timeline-sub">Cursando atualmente — focado em dados, algoritmos e sistemas distribuídos</div>
+      <div class="timeline-badge">Em andamento</div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-1">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">2024 → hoje</div>
+      <div class="timeline-title">Autodidata em Data Engineering</div>
+      <div class="timeline-sub">Python, SQL, Pandas, NumPy, Matplotlib, AWS, Git — construindo base sólida</div>
+      <div class="timeline-badge">Contínuo</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label reveal">Contato</div>
+  <h2 class="section-title reveal">Vamos <span class="dim">conversar?</span></h2>
+  <p style="color:var(--muted);max-width:400px;margin:0 auto 1rem;font-size:0.95rem;line-height:1.7" class="reveal">Estou aberto a oportunidades, colaborações e novos aprendizados. Me manda uma mensagem!</p>
+  <div class="contact-grid">
+    <a href="mailto:pedrosilva356aug@gmail.com" class="contact-card reveal">
+      <div class="contact-icon">✉️</div>
+      <div class="contact-label">EMAIL</div>
+      <div class="contact-value">pedrosilva356aug@gmail.com</div>
+    </a>
+    <a href="https://github.com/PedroIAM" target="_blank" class="contact-card reveal reveal-delay-1">
+      <div class="contact-icon">🐙</div>
+      <div class="contact-label">GITHUB</div>
+      <div class="contact-value">github.com/PedroIAM</div>
+    </a>
+    <a href="https://www.linkedin.com/in/pedro-augusto-9197ba3ab/" target="_blank" class="contact-card reveal reveal-delay-2">
+      <div class="contact-icon">💼</div>
+      <div class="contact-label">LINKEDIN</div>
+      <div class="contact-value">pedro-augusto-9197ba3ab</div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>Feito com 💙 por Pedro Augusto · Vila Velha, ES · 2025</p>
+</footer>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)})();
+
+// SCROLL PROGRESS
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  document.getElementById('progress').style.width=pct+'%';
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60);
+});
+
+// REVEAL ON SCROLL
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Animate skill bars
+      e.target.querySelectorAll('.skill-bar').forEach(b=>{
+        setTimeout(()=>{b.style.width=b.dataset.width+'%'},100);
+      });
+      // Animate timeline line
+      if(e.target.id==='education'){
+        const line=document.getElementById('timelineLine');
+        line.style.height='100%';
+      }
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+// Also observe sections for timeline
+document.querySelectorAll('section').forEach(el=>observer.observe(el));
+
+// TYPEWRITER
+const texts=['Futuro Engenheiro de Dados','Entusiasta de Python & SQL','Estudante de Ciência da Computação'];
+let ti=0,ci=0,deleting=false;
+function type(){
+  const tw=document.getElementById('typewriter');
+  const current=texts[ti];
+  if(!deleting){
+    tw.textContent=current.slice(0,ci+1);
+    ci++;
+    if(ci===current.length){deleting=true;setTimeout(type,2000);return}
+  }else{
+    tw.textContent=current.slice(0,ci-1);
+    ci--;
+    if(ci===0){deleting=false;ti=(ti+1)%texts.length}
+  }
+  setTimeout(type,deleting?50:80);
+}
+type();
+
+// PARTICLES
+(function createParticles(){
+  const container=document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;--tx:${(Math.random()-0.5)*200}px;opacity:0`;
+    container.appendChild(p);
+  }
+})();
+
+// AVATAR 3D TILT (simple)
+const av=document.getElementById('avatar3d');
+if(av){
+  av.addEventListener('mousemove',e=>{
+    const r=av.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width-0.5)*20;
+    const y=((e.clientY-r.top)/r.height-0.5)*-20;
+    av.style.transform=`perspective(600px) rotateX(${y}deg) rotateY(${x}deg)`;
+  });
+  av.addEventListener('mouseleave',()=>{av.style.transform='perspective(600px) rotateX(0) rotateY(0)'});
+}
+
+// PARALLAX on hero
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  const glow=document.querySelector('.hero-glow');
+  if(glow)glow.style.transform=`translate(-50%,calc(-50% + ${y*0.3}px))`;
+  const grid=document.querySelector('.hero-grid');
+  if(grid)grid.style.transform=`translateY(${y*0.15}px)`;
+});
+</script>
+</body>
+</html>
