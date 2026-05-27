@@ -58,6 +58,6 @@ Quer bater um papo ou tem alguma oportunidade?
 
 <div align="center">
 
-Feito com ❤️ por **Pedro Augusto**
+Feito com  por **Pedro Augusto**
 
 </div>
